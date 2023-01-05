@@ -5,17 +5,37 @@ import (
 	"net/http"
 )
 
+// func formHandler(w http.ResponseWriter, r *http.Request) {
+// 		if err := r.ParseForm(); err != nil {
+// 			fmt.Fprintf(w, "ParseForm() err: %v", err)
+// 			return
+// 		}
+// 		// saves values from form
+// 		name := r.FormValue("fname")
+// 		surname := r.FormValue("lname")
+// 		fmt.Fprintf(w, "POST request successful\n")
+// 		fmt.Fprintf(w, "Name: %s\n", name)
+// 		fmt.Fprintf(w, "Surname: %s\n", surname)
+// }
+
 func formHandler(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		fmt.Fprintf(w, "ParseForm() err: %v", err)
-		return
+	switch r.Method {
+	case "GET":		
+		 http.ServeFile(w, r, "./static/form.html")
+	case "POST":
+		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
+		if err := r.ParseForm(); err != nil {
+			fmt.Fprintf(w, "ParseForm() err: %v", err)
+			return
+		}
+		fmt.Fprintf(w, "POST request successful\n")
+		name := r.FormValue("name")
+		address := r.FormValue("address")
+		fmt.Fprintf(w, "Name = %s\n", name)
+		fmt.Fprintf(w, "Address = %s\n", address)
+	default:
+		fmt.Fprintf(w, "Sorry, only GET and POST methods are supported.")
 	}
-	fmt.Fprintf(w, "POST request successful")
-	// saves values from form
-	name := r.FormValue("name")
-	address := r.FormValue("address")
-	fmt.Fprintf(w, "Name: %s\n", name)
-	fmt.Fprintf(w, "Address: %s\n", address)
 }
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +56,7 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 
 	// handle '/' route
-	http.Handle("/", fileServer)
+	http.Handle("/", fs)
 	http.HandleFunc("/form", formHandler)
 	http.HandleFunc("/hello", helloHandler)
 
