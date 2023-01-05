@@ -5,19 +5,6 @@ import (
 	"net/http"
 )
 
-// func formHandler(w http.ResponseWriter, r *http.Request) {
-// 		if err := r.ParseForm(); err != nil {
-// 			fmt.Fprintf(w, "ParseForm() err: %v", err)
-// 			return
-// 		}
-// 		// saves values from form
-// 		name := r.FormValue("fname")
-// 		surname := r.FormValue("lname")
-// 		fmt.Fprintf(w, "POST request successful\n")
-// 		fmt.Fprintf(w, "Name: %s\n", name)
-// 		fmt.Fprintf(w, "Surname: %s\n", surname)
-// }
-
 func formHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":		
