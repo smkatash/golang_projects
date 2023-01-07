@@ -22,13 +22,19 @@ func printCommandEvents(analyticsChannel <-chan *slacker.CommandEvent) {
 }
 
 func main() {
-	godotenv.Load(".env")
-	bot := slacker.NewClient(os.Getenv("SLACK_BOT_TOKEN"), os.Getenv("SLACK_APP_TOKEN"))
+	err := godotenv.Load(".env") // 👈 load .env file
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	b_token := os.Getenv("SLACK_BOT_TOKEN")
+	app_token := os.Getenv("SLACK_APP_TOKEN")
+	bot := slacker.NewClient(b_token, app_token)
 	go printCommandEvents(bot.CommandEvents())
 
 	bot.Command("query for bot - <message>", &slacker.CommandDefinition{
 		Description: "send any question to wolfram",
-		//Example: "who is the president of Germany",
+		Examples: []string{"who is the president of Germany?"},
 		Handler: func(botCtx slacker.BotContext, request slacker.Request, response slacker.ResponseWriter){
 			query := request.Param("message")
 			fmt.Println(query)
@@ -40,7 +46,7 @@ func main() {
 	cnt, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := bot.Listen(cnt)
+	err = bot.Listen(cnt)
 	if err != nil {
 		log.Fatal(err)
 	}
